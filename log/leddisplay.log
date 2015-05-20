@@ -1,5 +1,0 @@
-# Logfile created on 2015-05-19 20:37:32 -0400 by logger.rb/31641
-I, [2015-05-19T20:37:32.296159 #3343]  INFO -- : displaying /tmp/d14ad855-ed51-4d51-932a-3171fe98526d.ppm
-E, [2015-05-19T20:38:41.467301 #3405] ERROR -- : Performing Display caused an exception (Resque::DirtyExit). Retrying...
-I, [2015-05-19T20:38:41.561722 #3413]  INFO -- : displaying /tmp/d14ad855-ed51-4d51-932a-3171fe98526d.ppm
-I, [2015-05-19T20:45:52.172067 #3519]  INFO -- : displaying /tmp/0157455a-0b65-4b43-aa1b-38e68bee131e.ppm

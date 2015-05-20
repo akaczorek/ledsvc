@@ -5,6 +5,8 @@ require "hipchat"
 require "json"
 require "securerandom"
 
+$indextime=Time.at(0)
+
 def setup()
   variables =%w{HIPCHAT_TOKEN HIPCHAT_ROOM}
   missing = variables.find_all { |v| ENV[v] == nil }
@@ -17,14 +19,14 @@ end
 def main()
   loop do
     begin
-      client = HipChat::Client.new(ENV['HIPCHAT_TOKEN'], :api_version => 'v2')
+      client = HipChat::Client.new(ENV['HIPCHAT_TOKEN'])
       myjson=JSON.parse(client[ENV['HIPCHAT_ROOM']].history())
     rescue HipChat::UnknownResponseCode => error
       puts error.inspect
       sleep 10
       retry
     end
-    myjson["items"].each do |i|
+    myjson["messages"].each do |i|
       $newindextime=Time.parse(i["date"])
       unless $newindextime <= $indextime
         msg=i["message"]
@@ -44,7 +46,7 @@ def fixer (text)
 end
 
 
-def render()
+def render(mytext)
   draw=Magick::Draw.new {
     self.font_family = 'Comic Sans MS'
     self.fill="#6495ED"
