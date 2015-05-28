@@ -27,8 +27,9 @@ post '/upload' do
   enqueueImage(params['file'][:tempfile])
 end
 
-post '/display/:text' do |text|
-  generateImageFile(text)
+post '/display' do ||
+  data = JSON.parse request.body.read
+  generateImageFile(data['text'])
 end
 
 def enqueueImage(imageFileObject)
