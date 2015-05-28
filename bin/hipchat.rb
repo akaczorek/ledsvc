@@ -6,7 +6,8 @@ require "json"
 require "securerandom"
 require "daemons"
 
-$indextime=Time.at(0)
+#$indextime=Time.at(0)
+$indextime=Time.now
 
 def setup()
   variables =%w{HIPCHAT_TOKEN HIPCHAT_ROOM}
@@ -85,7 +86,7 @@ options = {
   :dir_mode => :system
 }
 
-Daemons.run_proc(File.join(File.dirname(__FILE__), 'hipchat.rb'), options) do
+Daemons.run_proc("hipchat", options) do
   setup()
   main()
 end
