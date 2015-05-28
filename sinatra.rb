@@ -3,6 +3,8 @@ Bundler.require(:default)
 require File.expand_path('../lib/display', __FILE__)
 require 'sinatra/redis'
 require 'logger'
+require 'rmagick'
+require 'securerandom'
 
 configure do
   redis_url = "redis://localhost:6379/"
@@ -22,11 +24,47 @@ get "/" do
 end
 
 post '/upload' do
-  unless params['file'][:tempfile].nil?
-    tmpfile = params['file'][:tempfile]
+  enqueueImage(params['file'][:tempfile])
+end
+
+post '/display/:text' do |text|
+  generateImageFile(text)
+end
+
+def enqueueImage(imageFileObject)
+  unless imageFileObject.nil?
     outfile="/tmp/#{SecureRandom.uuid}.ppm"
-    File.open(outfile, 'w') { |file| file.write(params[:file][:tempfile].read) }
+    File.open(outfile, 'w') { |file| file.write(imageFileObject.read) }
     Resque.enqueue(Display, outfile)
   end
+end
+
+def generateImageFile(mytext)
+  draw=Magick::Draw.new {
+    self.font_family = 'Comic Sans MS'
+    self.fill="#6495ED"
+    self.pointsize = 16
+    self.font_weight = 600
+    self.gravity = Magick::SouthWestGravity
+    }
+  metrics=draw.get_type_metrics(mytext)
+  image=Magick::Image.new(metrics['width']+30,16) { 
+    self.background_color = "black" 
+    self.format = "PPM"
+    self.depth = 8
+    }
+  draw.annotate(image,0,0,0,0,mytext) {
+    self.font_family = 'Comic Sans MS'
+    self.fill="#6495ED"
+    self.pointsize = 16
+    self.font_weight = 600
+    self.gravity = Magick::SouthWestGravity
+    }
+  outfile="/tmp/#{SecureRandom.uuid}.ppm"
+  image.write(outfile)
+  outfileObject = File.new(outfile, 'r')
+  enqueueImage(outfileObject)
+  outfileObject.close()
+  File.delete(outfile)
 end
 
