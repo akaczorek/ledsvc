@@ -21,7 +21,7 @@ def main()
   loop do
     begin
       client = HipChat::Client.new(ENV['HIPCHAT_TOKEN'])
-    rescure => error
+    rescue => error
       puts error.inspect
       sleep 10
       retry
