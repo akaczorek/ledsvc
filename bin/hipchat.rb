@@ -4,6 +4,7 @@ require "rmagick"
 require "hipchat"
 require "json"
 require "securerandom"
+require "daemons"
 
 $indextime=Time.at(0)
 
@@ -73,5 +74,7 @@ def render(mytext)
   File.delete(outfile)
 end
 
-setup()
-main()
+Daemons.run_proc('hipchat.rb') do
+  setup()
+  main()
+end
