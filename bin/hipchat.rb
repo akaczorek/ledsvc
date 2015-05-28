@@ -80,7 +80,12 @@ def render(mytext)
   File.delete(outfile)
 end
 
-Daemons.run_proc('hipchat.rb') do
+options = {
+  :app_name => "hipchat",
+  :dir_mode => :system
+}
+
+Daemons.run_proc(File.join(File.dirname(__FILE__), 'hipchat.rb'), options) do
   setup()
   main()
 end
