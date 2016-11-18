@@ -4,8 +4,10 @@ require "rmagick"
 require "hipchat"
 require "json"
 require "securerandom"
+require "daemons"
 
-$indextime=Time.at(0)
+#$indextime=Time.at(0)
+$indextime=Time.now
 
 def setup()
   variables =%w{HIPCHAT_TOKEN HIPCHAT_ROOM}
@@ -20,6 +22,12 @@ def main()
   loop do
     begin
       client = HipChat::Client.new(ENV['HIPCHAT_TOKEN'])
+    rescue => error
+      puts error.inspect
+      sleep 10
+      retry
+    end
+    begin
       myjson=JSON.parse(client[ENV['HIPCHAT_ROOM']].history())
     rescue HipChat::UnknownResponseCode => error
       puts error.inspect
@@ -73,5 +81,12 @@ def render(mytext)
   File.delete(outfile)
 end
 
-setup()
-main()
+options = {
+  :app_name => "hipchat",
+  :dir_mode => :system
+}
+
+Daemons.run_proc("hipchat", options) do
+  setup()
+  main()
+end
