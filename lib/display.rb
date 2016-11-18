@@ -17,7 +17,7 @@ class Display
 
   def self.perform(localpath)
     logger.info "displaying #{localpath}"
-    system("/root/ledsvc/led-matrix","-r16","-D1","-t30","#{localpath}")
+    system("/root/ledsvc/led-matrix","-r16","-D1","-t60","#{localpath}")
     File.delete(localpath)
   rescue Resque::TermException
     logger.error "display #{localpath} failed"
